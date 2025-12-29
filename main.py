@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-# from tabulate import tabulate
 from dataclasses import dataclass, field
 
 # constant path description
@@ -40,6 +39,7 @@ class LoadDB:
             return db
         except Exception as e:
             raise RuntimeError(f"Nie udało się wczytać pliku {self.path}: {e}") from e
+
 """
 class ReadDB:
 
@@ -64,6 +64,7 @@ class ReadDB:
             "cols": len(df.columns),
             "columns": list(df.columns),
         }
+"""
 
 class SaveDB:
 
@@ -79,7 +80,34 @@ class SaveDB:
         with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
             for sheet_name, df in self.db.tables.items():
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
-"""
+
+class Table:
+
+    def __init__(self, db:ObjectDB):
+
+        self.db = db
+
+    def add_table(self, table_name, columns = "ID"):
+
+        if table_name in self.db.tables:
+            raise ValueError(f"Tabela {table_name} już isnieje w tej bazie dannych")
+
+        new_table = pd.DataFrame(columns=columns)
+        self.db.tables[table_name] = new_table
+        SaveDB(self.db).save()
+
+        print(f"Tabela '{table_name}' została dodana do bazy danych")
+
+    def delete_table(self, table_name):
+
+        if table_name not in self.db.tables:
+            raise ValueError(f"Tabela {table_name} nie isnieje w tej bazie dannych")
+
+        else:
+            del self.db.tables[table_name]
+            SaveDB(self.db).save()
+            print(f"{table_name}' została usunięta z bazy dabych")
+
 class EditDB:
 
     def __init__(self, db: ObjectDB, table_name: str,):
