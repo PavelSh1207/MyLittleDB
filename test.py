@@ -1,4 +1,4 @@
-from main import EditDB, CreateEmptyDB, LoadDB
+from main import EditDB, CreateEmptyDB, LoadDB, Table
 
 # TESTS
 
@@ -22,6 +22,7 @@ edit_db.find_by_row_number(2)
 edit_db.show()
 edit_db.sync_and_save()
 
+Table(db).add_table("new")
 
 
 

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from dataclasses import dataclass, field
+import time
 
 # constant path description
 DATA_DIR = "data"
@@ -22,7 +23,11 @@ class CreateEmptyDB:
         os.makedirs(DATA_DIR, exist_ok=True)
         self.path = os.path.join(DATA_DIR, nameDB)
         self.emptyDB = pd.DataFrame(columns=['ID'])
-        self.emptyDB.to_excel(self.path, sheet_name=sheet_name, index = False)
+
+        with pd.ExcelWriter(self.path, engine='openpyxl') as writer:
+            self.emptyDB.to_excel(writer, sheet_name=sheet_name, index=False)
+
+        time.sleep(0.1)
 
 class LoadDB:
 
@@ -87,7 +92,7 @@ class Table:
 
         self.db = db
 
-    def add_table(self, table_name, columns = "ID"):
+    def add_table(self, table_name, columns = ["ID"]):
 
         if table_name in self.db.tables:
             raise ValueError(f"Tabela {table_name} już isnieje w tej bazie dannych")
